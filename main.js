@@ -4,35 +4,48 @@ canvas.width = 1664;
 canvas.height = 640;
 document.body.appendChild(canvas);
 var bgReady = false;
+
+var killzombi = function(){
+    if  (hero.x <= (monster.x + 64)
+        && monster.x <= (hero.x + 64)
+        && hero.y <= (monster.y + 64)
+        && monster.y <= (hero.y + 64)
+    ) {
+        ++monstersCaught;
+        reset();
+    }
+
+};
+var blockmove = function(){ 
+    if(hero.x >= 1600)
+        hero.x = 1580;
+    if(hero.x <= 20)
+        hero.x = 40;
+};
+
 var bgImage = new Image();
+var heromove = function(){};
 bgImage.onload = function () {
     bgReady = true;
 };
 bgImage.src = "images/background.png";
-
-
 var heroReady = false;
 var heroImage = new Image();
 heroImage.onload = function () {
     heroReady = true;
 };
 heroImage.src = "images/hero.png";
-
 var monsterReady = false;
 var monsterImage = new Image();
 monsterImage.onload = function () {
     monsterReady = true;
 };
 monsterImage.src = "images/zombi.png";
-
-
 var hero = {
     speed: 256 
 };
 var monster = {};
 var monstersCaught = 0;
-
-
 var keysDown = {};
 
 addEventListener("keydown", function (e) {
@@ -41,20 +54,19 @@ addEventListener("keydown", function (e) {
 
 addEventListener("keyup", function (e) {
     delete keysDown[e.keyCode];
-}, false);
-
+}, false)
 
 var reset = function () {
     hero.x = canvas.width / 2;
     hero.y = canvas.height / 2;
 
     
-    monster.x = 32 + (Math.random() * (canvas.width - 64));
-    monster.y = 32 + (Math.random() * (canvas.height - 64));
+    monster.x = 32 + (Math.random() * (canvas.width - 164));
+    monster.y = 32 + (Math.random() * (canvas.height - 164));
 };
+//blockmove();
 
-
-var update = function (modifier) {
+var heromove = function (modifier) {
     if (38 in keysDown) { 
         hero.y -= hero.speed * modifier;
     }
@@ -66,19 +78,16 @@ var update = function (modifier) {
     }
     if (39 in keysDown) { 
         hero.x += hero.speed * modifier;
-    }
+        blockmove();
+       
+    
+    
+        killzombi();
+    }};
 
-  
-    if (
-        hero.x <= (monster.x + 32)
-        && monster.x <= (hero.x + 32)
-        && hero.y <= (monster.y + 32)
-        && monster.y <= (hero.y + 32)
-    ) {
-        ++monstersCaught;
-        reset();
-    }
-};
+
+
+    //blockmove();
 
 var render = function () {
     if (bgReady) {
@@ -111,7 +120,7 @@ centralEntity.script.game.on('reset', this.reset, this)
 var main = function () {
     var now = Date.now();
     var delta = now - then;
-    update(delta / 1000);
+    heromove(delta / 1000);
     render();
 
     then = now;
